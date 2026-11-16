@@ -1750,8 +1750,8 @@ async function searchRealSongs() {
   } catch (error) {
     console.error("Music Match:", error);
     area.textContent =
-      "曲を取得できませんでした。" +
-      "インターネット接続を確認して、もう一度試してね。";
+  "音楽検索エラー: " +
+  (error?.message || String(error));
   } finally {
     button.disabled = false;
     button.textContent = "実在するおすすめ曲を探す ♫";
