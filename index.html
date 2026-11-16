@@ -1,0 +1,1766 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f8f3f5">
+<title>VØQ CREATOR | Your story, your style</title>
+<style>
+:root{
+ --pink:#d985a6;
+ --ink:#27242b;
+ --muted:#827b85;
+ --line:#eee4e9;
+ --bg:#f8f3f5;
+ --white:#fff;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:var(--bg);
+ color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,
+ "Helvetica Neue","Hiragino Kaku Gothic ProN",
+ Meiryo,sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+header{
+ text-align:center;
+ padding:38px 15px 24px;
+}
+.logo{
+ font-size:30px;
+ font-weight:750;
+ letter-spacing:4px;
+}
+.tagline{
+ font-size:12px;
+ color:var(--muted);
+ letter-spacing:2px;
+ margin-top:8px;
+}
+.version{
+ display:inline-block;
+ margin-top:12px;
+ padding:5px 12px;
+ border:1px solid #e6c7d4;
+ border-radius:30px;
+ color:#b66a8b;
+ font-size:11px;
+}
+main{
+ width:min(100%,980px);
+ margin:auto;
+ padding:0 14px 60px;
+}
+.card{
+ background:white;
+ border:1px solid var(--line);
+ border-radius:22px;
+ padding:23px;
+ margin-bottom:20px;
+ box-shadow:0 6px 25px #38203208;
+}
+h2{
+ font-size:19px;
+ margin:0 0 15px;
+}
+h3{
+ font-size:15px;
+ margin:20px 0 10px;
+}
+p{line-height:1.7}
+.small{
+ font-size:12px;
+ color:var(--muted);
+}
+label{
+ display:block;
+ margin:15px 0 8px;
+ font-size:13px;
+ font-weight:650;
+}
+input[type=file]{
+ display:block;
+ width:100%;
+ padding:17px;
+ border:1px dashed #d7b7c6;
+ border-radius:13px;
+ background:#fff9fb;
+}
+input[type=text],select,textarea{
+ width:100%;
+ padding:12px;
+ border:1px solid #e5dce1;
+ border-radius:11px;
+ background:white;
+ color:var(--ink);
+}
+input[type=range]{
+ width:100%;
+ accent-color:var(--pink);
+}
+button{
+ border:0;
+ border-radius:12px;
+ background:var(--ink);
+ color:white;
+ padding:11px 15px;
+}
+button:disabled{
+ opacity:.45;
+ cursor:not-allowed;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible{
+ outline:2px solid var(--pink);
+ outline-offset:3px;
+}
+.pink{
+ background:var(--pink);
+}
+.secondary{
+ background:#f7edf2;
+ color:#a45e7c;
+}
+.ghost{
+ background:white;
+ color:var(--ink);
+ border:1px solid var(--line);
+}
+.gallery{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+ gap:10px;
+ margin-top:15px;
+}
+.thumb{
+ padding:7px;
+ border:2px solid #eee;
+ border-radius:13px;
+ background:white;
+ color:var(--ink);
+ text-align:center;
+}
+.thumb.active{
+ border-color:var(--pink);
+ background:#fff5f9;
+}
+.thumb img{
+ display:block;
+ width:100%;
+ height:115px;
+ object-fit:contain;
+ border-radius:8px;
+ background:#f4f0f2;
+}
+.thumb span{
+ display:block;
+ font-size:11px;
+ margin-top:7px;
+}
+.editor-layout{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ gap:24px;
+ align-items:start;
+}
+.preview-wrap{
+ position:sticky;
+ top:15px;
+}
+.preview-title{
+ text-align:center;
+ font-size:12px;
+ color:var(--muted);
+ margin-bottom:10px;
+}
+.stage{
+ position:relative;
+ width:100%;
+ max-width:450px;
+ margin:auto;
+ overflow:hidden;
+ background:#eee;
+ border-radius:14px;
+ touch-action:pan-y;
+}
+.stage img{
+ display:block;
+ width:100%;
+ height:auto;
+}
+.warmth{
+ position:absolute;
+ inset:0;
+ pointer-events:none;
+ z-index:1;
+}
+.overlay-layer{
+ position:absolute;
+ inset:0;
+ z-index:2;
+ pointer-events:none;
+}
+.caption-text{
+ position:absolute;
+ z-index:4;
+ left:50%;
+ top:78%;
+ transform:translate(-50%,-50%);
+ max-width:90%;
+ text-align:center;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ line-height:1.35;
+ color:white;
+ font-size:19px;
+ text-shadow:0 2px 6px #0008;
+ cursor:grab;
+ touch-action:none;
+ user-select:none;
+}
+.caption-text:active{cursor:grabbing}
+.decor{
+ position:absolute;
+ z-index:3;
+ transform:translate(-50%,-50%);
+ cursor:grab;
+ touch-action:none;
+ user-select:none;
+ line-height:1;
+ text-shadow:0 2px 6px #0003;
+}
+.decor.selected{
+ outline:1px dashed #fff;
+ outline-offset:7px;
+}
+.panel{
+ background:#fdf6f9;
+ padding:16px;
+ border-radius:16px;
+ margin-top:16px;
+}
+.tabs{
+ display:flex;
+ flex-wrap:wrap;
+ gap:7px;
+ margin-bottom:17px;
+}
+.tab{
+ background:#f4eef1;
+ color:#695e66;
+ padding:9px 12px;
+ font-size:12px;
+}
+.tab.active{
+ background:var(--ink);
+ color:white;
+}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.filter-grid{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:9px;
+}
+.filter-btn{
+ background:#faf5f7;
+ border:1px solid #e9dbe2;
+ color:#473a42;
+ font-size:13px;
+}
+.filter-btn.active{
+ background:#f6dbe7;
+ border-color:var(--pink);
+}
+.two{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+.range-label{
+ display:flex;
+ justify-content:space-between;
+ gap:8px;
+}
+.ideas{
+ display:grid;
+ gap:9px;
+ margin-top:15px;
+}
+.idea{
+ background:white;
+ color:#493d44;
+ border:1px solid #e9cbd9;
+ text-align:left;
+ padding:13px;
+}
+.idea:hover{
+ background:#fff0f6;
+}
+.chips{
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+}
+.chip{
+ background:#f6f0f3;
+ border:1px solid #ebdce3;
+ color:#57434e;
+ padding:9px 12px;
+ font-size:12px;
+}
+.chip.selected{
+ background:#f4d7e4;
+ border-color:#d98fac;
+}
+.color-row{
+ display:flex;
+ gap:12px;
+ align-items:center;
+ padding:10px 0;
+}
+.color-dot{
+ width:35px;
+ height:35px;
+ padding:0;
+ border-radius:50%;
+ border:2px solid #ccc;
+}
+.color-dot.selected{
+ outline:2px solid #333;
+ outline-offset:3px;
+}
+.music-result{
+ border:1px solid #eddde5;
+ background:white;
+ padding:15px;
+ border-radius:14px;
+ margin-top:14px;
+}
+.music-result strong{
+ display:block;
+ margin-bottom:8px;
+}
+.music-result a{
+ display:inline-block;
+ margin:7px 8px 0 0;
+ color:#b36286;
+ font-size:13px;
+}
+.notice{
+ padding:12px;
+ background:#fff7e9;
+ color:#796044;
+ border-radius:11px;
+ font-size:12px;
+ line-height:1.6;
+}
+.actions{
+ display:flex;
+ gap:10px;
+ flex-wrap:wrap;
+ margin-top:17px;
+}
+.actions button{
+ flex:1;
+ min-width:130px;
+}
+.hidden{display:none!important}
+footer{
+ text-align:center;
+ font-size:11px;
+ color:var(--muted);
+ padding:20px;
+}
+@media(max-width:700px){
+ .editor-layout{grid-template-columns:1fr}
+ .preview-wrap{position:static}
+ .card{padding:16px}
+ .logo{font-size:25px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">VØQ CREATOR</div>
+ <div class="tagline">YOUR STORY, YOUR STYLE ♡</div>
+ <div class="version">BETA v0.8</div>
+</header>
+
+<main>
+
+<section class="card">
+ <h2>01｜写真を選ぶ ♡</h2>
+ <p class="small">
+  お気に入りの写真を最大10枚選んでね。
+  写真はこのブラウザ内で編集されます。
+ </p>
+ <input id="fileInput" type="file"
+  accept="image/*" multiple>
+ <p id="uploadStatus" class="small"></p>
+ <div id="gallery" class="gallery"></div>
+</section>
+
+<section id="editor" class="card hidden">
+ <h2>02｜写真をかわいく仕上げる ♡</h2>
+
+ <div class="editor-layout">
+  <div class="preview-wrap">
+   <div class="preview-title">
+    PHOTO PREVIEW
+   </div>
+   <div id="stage" class="stage">
+    <img id="preview" alt="編集中の写真">
+    <div id="warmthLayer" class="warmth"></div>
+    <div id="overlayLayer"
+     class="overlay-layer"></div>
+    <div id="caption"
+     class="caption-text"></div>
+   </div>
+   <p class="small" style="text-align:center">
+    文字や装飾は指で移動できるよ ♡
+   </p>
+   <div class="actions">
+    <button id="saveImage" class="pink">
+     画像を保存 ♡
+    </button>
+   </div>
+   <p id="saveStatus" class="small"></p>
+  </div>
+
+  <div>
+   <div class="tabs">
+    <button class="tab active"
+     data-tab="filterPanel">写真加工</button>
+    <button class="tab"
+     data-tab="phrasePanel">フレーズ</button>
+    <button class="tab"
+     data-tab="decorPanel">装飾</button>
+    <button class="tab"
+     data-tab="musicPanel">音楽</button>
+   </div>
+
+   <div id="filterPanel"
+    class="tab-panel active">
+    <h3>写真の加工スタイル</h3>
+    <div class="filter-grid" id="filterGrid">
+     <button class="filter-btn active"
+      data-filter="original">Original</button>
+     <button class="filter-btn"
+      data-filter="korean">Korean ♡</button>
+     <button class="filter-btn"
+      data-filter="american">American</button>
+     <button class="filter-btn"
+      data-filter="film">Film</button>
+     <button class="filter-btn"
+      data-filter="soft">Soft</button>
+     <button class="filter-btn"
+      data-filter="cool">Cool</button>
+    </div>
+
+    <div class="two">
+     <div>
+      <label class="range-label">
+       明るさ <span id="brightnessNum">100</span>
+      </label>
+      <input id="brightness" type="range"
+       min="60" max="150" value="100">
+     </div>
+     <div>
+      <label class="range-label">
+       コントラスト <span id="contrastNum">100</span>
+      </label>
+      <input id="contrast" type="range"
+       min="60" max="150" value="100">
+     </div>
+     <div>
+      <label class="range-label">
+       彩度 <span id="saturationNum">100</span>
+      </label>
+      <input id="saturation" type="range"
+       min="0" max="180" value="100">
+     </div>
+     <div>
+      <label class="range-label">
+       暖かさ <span id="warmthNum">0</span>
+      </label>
+      <input id="warmth" type="range"
+       min="-50" max="50" value="0">
+     </div>
+    </div>
+    <div class="actions">
+     <button id="resetFilter"
+      class="secondary">加工をリセット</button>
+    </div>
+   </div>
+
+   <div id="phrasePanel" class="tab-panel">
+    <h3>写真に合うフレーズを選ぼう ♡</h3>
+    <label for="scene">シーン</label>
+    <select id="scene">
+     <option value="food">カフェ・食べ物</option>
+     <option value="friends">友達・女子会</option>
+     <option value="date">デート・恋人</option>
+     <option value="travel">旅行・お出かけ</option>
+     <option value="birthday">誕生日</option>
+     <option value="night">夜景・夜遊び</option>
+     <option value="fashion">自撮り・ファッション</option>
+     <option value="daily">日常</option>
+    </select>
+
+    <label for="mood">フレーズの雰囲気</label>
+    <select id="mood">
+     <option value="cute">かわいい</option>
+     <option value="cool">大人っぽい</option>
+     <option value="emo">エモい</option>
+     <option value="funny">面白い</option>
+     <option value="korean">韓国っぽい</option>
+    </select>
+
+    <label for="emojiLevel">絵文字の量</label>
+    <select id="emojiLevel">
+     <option value="normal">少なめ</option>
+     <option value="many">多め</option>
+     <option value="none">なし</option>
+    </select>
+
+    <div id="phraseIdeas" class="ideas"></div>
+
+    <label for="captionInput">フレーズを編集</label>
+    <input id="captionInput" type="text"
+     placeholder="好きなフレーズを入力">
+
+    <label for="fontSelect">文字のスタイル</label>
+    <select id="fontSelect">
+     <option value="soft">Soft</option>
+     <option value="minimal">Minimal</option>
+     <option value="romantic">Romantic</option>
+     <option value="bold">Bold</option>
+    </select>
+
+    <label class="range-label">
+     文字サイズ
+     <span id="fontSizeNum">19</span>
+    </label>
+    <input id="fontSize" type="range"
+     min="10" max="60" value="19">
+
+    <label>文字の色</label>
+    <div class="color-row" id="colorRow">
+     <button class="color-dot selected"
+      data-color="#ffffff"
+      style="background:#ffffff"
+      aria-label="白"></button>
+     <button class="color-dot"
+      data-color="#202020"
+      style="background:#202020"
+      aria-label="黒"></button>
+     <button class="color-dot"
+      data-color="#f6a8c7"
+      style="background:#f6a8c7"
+      aria-label="ピンク"></button>
+     <button class="color-dot"
+      data-color="#b99770"
+      style="background:#b99770"
+      aria-label="ベージュ"></button>
+    </div>
+   </div>
+
+   <div id="decorPanel" class="tab-panel">
+    <h3>キラキラ・ハートを追加 ♡</h3>
+    <p class="small">
+     好きな装飾を押して写真に追加。
+     追加した装飾をタップすると選択できるよ。
+    </p>
+    <div class="chips" id="decorChoices">
+     <button class="chip" data-decor="✨">✨ キラキラ</button>
+     <button class="chip" data-decor="💗">💗 ハート</button>
+     <button class="chip" data-decor="🤍">🤍 白ハート</button>
+     <button class="chip" data-decor="🎀">🎀 リボン</button>
+     <button class="chip" data-decor="⭐">⭐ スター</button>
+     <button class="chip" data-decor="🫧">🫧 バブル</button>
+     <button class="chip" data-decor="🦋">🦋 蝶</button>
+     <button class="chip" data-decor="🌸">🌸 お花</button>
+    </div>
+
+    <label class="range-label">
+     選択中の装飾サイズ
+     <span id="decorSizeNum">40</span>
+    </label>
+    <input id="decorSize" type="range"
+     min="18" max="100" value="40">
+
+    <div class="actions">
+     <button id="deleteDecor"
+      class="secondary">選択した装飾を削除</button>
+     <button id="clearDecor"
+      class="ghost">装飾をすべて削除</button>
+    </div>
+   </div>
+
+   <div id="musicPanel" class="tab-panel">
+    <h3>VØQ MUSIC MATCH ♫</h3>
+    <p class="small">
+     写真のシーンと好きなジャンルから、
+     Instagramで探す音楽の方向性を提案するよ。
+    </p>
+
+    <label>好きなジャンル（複数選択OK）</label>
+    <div id="genreChoices" class="chips"></div>
+
+    <label for="musicEra">曲の時期</label>
+    <select id="musicEra">
+     <option value="trend">今流行っている曲</option>
+     <option value="recent">1〜3年前に流行った曲</option>
+     <option value="nostalgic">少し懐かしい曲</option>
+     <option value="any">年代おまかせ</option>
+    </select>
+
+    <label for="musicMood">曲の雰囲気</label>
+    <select id="musicMood">
+     <option value="auto">写真のシーンから提案</option>
+     <option value="cool">かっこいい</option>
+     <option value="cute">かわいい</option>
+     <option value="chill">チル・落ち着いた</option>
+     <option value="emo">エモい・切ない</option>
+    </select>
+
+    <button id="musicSearch"
+     class="pink" style="width:100%;margin-top:18px">
+     おすすめの探し方を見る ♫
+    </button>
+
+    <div id="musicResults"></div>
+
+    <p class="notice">
+     現在は検索補助の試作版です。
+     写真をAIが解析したり、
+     最新の実在曲を自動取得したりする機能は
+     まだ搭載されていません。
+     Instagramでの楽曲利用可否は
+     Instagramアプリ内で確認してください。
+    </p>
+   </div>
+
+  </div>
+ </div>
+</section>
+
+</main>
+
+<footer>
+ VØQ CREATOR © 2026 · BETA VERSION
+</footer>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+const state={
+ photos:[],
+ selected:-1,
+ edits:{},
+ version:0,
+ activeDecor:-1,
+ dragging:null
+};
+
+const presets={
+ original:[100,100,100,0],
+ korean:[110,92,92,-5],
+ american:[103,115,115,18],
+ film:[96,105,85,12],
+ soft:[112,85,88,4],
+ cool:[101,108,92,-20]
+};
+
+const genres=[
+ "日本語ラップ",
+ "日本のHIP-HOP",
+ "海外HIP-HOP",
+ "R&B",
+ "J-POP",
+ "K-POP",
+ "洋楽ポップ",
+ "邦ロック",
+ "バラード",
+ "インディーズ"
+];
+
+let selectedGenres=new Set([
+ "日本語ラップ","K-POP"
+]);
+
+const phrases={
+ food:{
+  cute:["おいしかった〜","また食べたいっ","しあわせな味"],
+  cool:["今日のカフェ記録","お気に入りの場所","coffee time"],
+  emo:["この時間がすき","忘れたくない味","小さなしあわせ"],
+  funny:["胃袋が幸せ","食べるのに夢中","カロリーは明日考える"],
+  korean:["cafe diary","so yummy","sweet moment"]
+ },
+ friends:{
+  cute:["たのしかった〜","また遊ぼうねっ","だいすきな時間"],
+  cool:["girls day","good memories","いつものメンバー"],
+  emo:["ずっとこのままで","大切な思い出","この時間が宝物"],
+  funny:["笑いすぎた","今日も安定に最高","一生しゃべれる"],
+  korean:["our day","with my girls","lovely moments"]
+ },
+ date:{
+  cute:["しあわせだった〜","また行こうねっ","だいすきな日"],
+  cool:["date diary","our little day","ふたりの時間"],
+  emo:["ずっと忘れない","一緒にいられて幸せ","特別な時間"],
+  funny:["今日も平和でした","楽しすぎた件","また連れてってね"],
+  korean:["with you","our moment","lovely day"]
+ },
+ travel:{
+  cute:["また行きたいな〜","思い出いっぱい","夢みたいだった"],
+  cool:["travel diary","little escape","旅の記録"],
+  emo:["忘れられない景色","この瞬間をずっと","またこの場所へ"],
+  funny:["帰りたくなかった","もう次の旅行行きたい","旅欲が止まらない"],
+  korean:["take me back","beautiful days","somewhere lovely"]
+ },
+ birthday:{
+  cute:["しあわせな誕生日","ありがとう〜","特別な一日"],
+  cool:["birthday diary","another year","make a wish"],
+  emo:["大切な人たちに感謝","忘れられない一日","幸せをありがとう"],
+  funny:["主役の日でした","またひとつ大人に","ケーキは別腹"],
+  korean:["birthday girl","sweet birthday","my special day"]
+ },
+ night:{
+  cute:["きらきらだった〜","素敵な夜","夜のおでかけ"],
+  cool:["city lights","after dark","night out"],
+  emo:["この夜がすき","夜風が気持ちいい","忘れられない夜"],
+  funny:["夜更かし確定","まだ帰りたくない","夜って最高"],
+  korean:["night diary","moonlight","city mood"]
+ },
+ fashion:{
+  cute:["今日のわたし","お気に入りっ","今日のコーデ"],
+  cool:["fit check","outfit diary","today's look"],
+  emo:["自分らしくいたい","今日の気分","小さな変化"],
+  funny:["服だけは決まった","今日ちょっと盛れた","鏡見すぎた"],
+  korean:["daily look","ootd","my style"]
+ },
+ daily:{
+  cute:["いい日だった〜","小さなしあわせ","なんでもない日"],
+  cool:["daily diary","life lately","今日の記録"],
+  emo:["何気ない日がすき","今を大切に","日々のかけら"],
+  funny:["今日もよく生きた","平和な一日でした","なんかいい日"],
+  korean:["dear diary","little things","slow day"]
+ }
+};
+
+const emojiMap={
+ food:["🤤💕","🍰🤍","☕️✨"],
+ friends:["🥹🫶🏻","💗🎀","👭✨"],
+ date:["🤍🥹","💕🫶🏻","🌷✨"],
+ travel:["✈️🤍","🌺💕","📸✨"],
+ birthday:["🎂💗","🎀✨","🥹🤍"],
+ night:["🌙✨","🥂🤍","🌃💕"],
+ fashion:["🎀🤍","🪞✨","💗"],
+ daily:["🫧🤍","🌷💕","✨"]
+};
+
+function current(){
+ return state.photos[state.selected]||null;
+}
+
+function defaultEdit(){
+ return {
+  filter:"original",
+  brightness:100,
+  contrast:100,
+  saturation:100,
+  warmth:0,
+  scene:"daily",
+  mood:"cute",
+  emojiLevel:"normal",
+  caption:"いい日だった〜🫧🤍",
+  font:"soft",
+  fontSize:19,
+  color:"#ffffff",
+  x:50,y:78,
+  decors:[]
+ };
+}
+
+function edit(){
+ if(state.selected<0)return null;
+ if(!state.edits[state.selected]){
+  state.edits[state.selected]=defaultEdit();
+ }
+ return state.edits[state.selected];
+}
+
+function fileToURL(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onload=()=>resolve(reader.result);
+  reader.onerror=reject;
+  reader.readAsDataURL(file);
+ });
+}
+
+function loadImage(src){
+ return new Promise((resolve,reject)=>{
+  const image=new Image();
+  image.onload=()=>resolve(image);
+  image.onerror=reject;
+  image.src=src;
+ });
+}
+
+$("fileInput").addEventListener("change",async event=>{
+ const files=Array.from(event.target.files);
+ if(files.length>10){
+  alert("写真は最大10枚までだよ ♡");
+  event.target.value="";
+  return;
+ }
+
+ const version=++state.version;
+ state.photos=[];
+ state.edits={};
+ state.selected=-1;
+ state.activeDecor=-1;
+
+ $("gallery").innerHTML="";
+ $("editor").classList.add("hidden");
+ $("uploadStatus").textContent="写真を読み込み中...";
+
+ let failed=0;
+
+ for(const file of files){
+  if(!file.type.startsWith("image/")){
+   failed++;
+   continue;
+  }
+  try{
+   const src=await fileToURL(file);
+   const image=await loadImage(src);
+   if(version!==state.version)return;
+   state.photos.push({
+    src,
+    width:image.naturalWidth,
+    height:image.naturalHeight
+   });
+  }catch(err){
+   console.error(err);
+   failed++;
+  }
+ }
+
+ if(version!==state.version)return;
+
+ $("uploadStatus").textContent=
+  `${state.photos.length}枚読み込みました`+
+  (failed?`（${failed}枚読み込めませんでした）`:"");
+
+ renderGallery();
+ if(state.photos.length)selectPhoto(0);
+});
+
+function renderGallery(){
+ const area=$("gallery");
+ area.innerHTML="";
+
+ state.photos.forEach((photo,index)=>{
+  const button=document.createElement("button");
+  button.className="thumb"+
+   (index===state.selected?" active":"");
+
+  const img=document.createElement("img");
+  img.src=photo.src;
+  img.alt=`写真${index+1}`;
+
+  const span=document.createElement("span");
+  span.textContent=`写真 ${index+1}`;
+
+  button.append(img,span);
+  button.onclick=()=>selectPhoto(index);
+  area.appendChild(button);
+ });
+}
+
+function selectPhoto(index){
+ if(!state.photos[index])return;
+ state.selected=index;
+ state.activeDecor=-1;
+
+ const photo=current();
+ const e=edit();
+
+ $("editor").classList.remove("hidden");
+ $("preview").src=photo.src;
+
+ syncControls(e);
+ renderGallery();
+ renderPreview();
+ renderPhrases();
+}
+
+function syncControls(e){
+ for(const key of [
+  "brightness","contrast","saturation","warmth"
+ ]){
+  $(key).value=e[key];
+ }
+ $("scene").value=e.scene;
+ $("mood").value=e.mood;
+ $("emojiLevel").value=e.emojiLevel;
+ $("captionInput").value=e.caption;
+ $("fontSelect").value=e.font;
+ $("fontSize").value=e.fontSize;
+
+ updateFilterButtons();
+ updateColorButtons();
+ updateRangeNumbers();
+}
+
+function updateRangeNumbers(){
+ for(const key of [
+  "brightness","contrast","saturation","warmth"
+ ]){
+  $(key+"Num").textContent=$(key).value;
+ }
+ $("fontSizeNum").textContent=$("fontSize").value;
+}
+
+function getFilter(e){
+ return `brightness(${e.brightness}%) `+
+  `contrast(${e.contrast}%) `+
+  `saturate(${e.saturation}%)`;
+}
+
+function updateFilterButtons(){
+ const e=edit();
+ document.querySelectorAll(".filter-btn").forEach(b=>{
+  b.classList.toggle(
+   "active",b.dataset.filter===e.filter
+  );
+ });
+}
+
+function updateColorButtons(){
+ const e=edit();
+ document.querySelectorAll(".color-dot").forEach(b=>{
+  b.classList.toggle(
+   "selected",b.dataset.color===e.color
+  );
+ });
+}
+
+function fontCSS(type){
+ if(type==="romantic"){
+  return "Georgia,serif";
+ }
+ if(type==="bold"){
+  return "Arial,sans-serif";
+ }
+ if(type==="minimal"){
+  return "Arial,sans-serif";
+ }
+ return '"Helvetica Neue",Arial,sans-serif';
+}
+
+function renderPreview(){
+ const e=edit();
+ if(!e)return;
+
+ // 元画像のsrcは加工時に変更しない
+ $("preview").style.filter=getFilter(e);
+
+ const layer=$("warmthLayer");
+ layer.style.background=
+  e.warmth>=0?"#ffad60":"#7ba9ff";
+ layer.style.opacity=
+  Math.min(Math.abs(e.warmth)/200,.25);
+
+ const caption=$("caption");
+ caption.textContent=e.caption;
+ caption.style.left=e.x+"%";
+ caption.style.top=e.y+"%";
+ caption.style.color=e.color;
+ caption.style.fontSize=e.fontSize+"px";
+ caption.style.fontFamily=fontCSS(e.font);
+ caption.style.fontWeight=
+  e.font==="bold"?"bold":
+  e.font==="soft"?"300":"normal";
+ caption.style.fontStyle=
+  e.font==="romantic"?"italic":"normal";
+
+ renderDecors();
+}
+
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+ btn.onclick=()=>{
+  const e=edit();
+  if(!e)return;
+
+  e.filter=btn.dataset.filter;
+  const values=presets[e.filter];
+
+  [
+   e.brightness,e.contrast,
+   e.saturation,e.warmth
+  ]=values;
+
+  syncControls(e);
+  renderPreview();
+ };
+});
+
+for(const key of [
+ "brightness","contrast","saturation","warmth"
+]){
+ $(key).addEventListener("input",()=>{
+  const e=edit();
+  if(!e)return;
+  e[key]=Number($(key).value);
+  updateRangeNumbers();
+  renderPreview();
+ });
+}
+
+$("resetFilter").onclick=()=>{
+ const e=edit();
+ if(!e)return;
+ e.filter="original";
+ [
+  e.brightness,e.contrast,
+  e.saturation,e.warmth
+ ]=presets.original;
+ syncControls(e);
+ renderPreview();
+};
+
+function buildPhrase(text,index){
+ const scene=$("scene").value;
+ const level=$("emojiLevel").value;
+
+ if(level==="none")return text;
+
+ const emoji=emojiMap[scene][index%3];
+ return text+(level==="many"?" "+emoji+" ✨":" "+emoji);
+}
+
+function renderPhrases(){
+ const scene=$("scene").value;
+ const mood=$("mood").value;
+ const list=phrases[scene][mood];
+ const area=$("phraseIdeas");
+
+ area.innerHTML="";
+ list.forEach((text,index)=>{
+  const phrase=buildPhrase(text,index);
+  const button=document.createElement("button");
+  button.className="idea";
+  button.textContent=phrase;
+  button.onclick=()=>{
+   const e=edit();
+   e.caption=phrase;
+   $("captionInput").value=phrase;
+   renderPreview();
+  };
+  area.appendChild(button);
+ });
+}
+
+for(const id of ["scene","mood","emojiLevel"]){
+ $(id).addEventListener("change",()=>{
+  const e=edit();
+  if(!e)return;
+  e[id==="#scene"?"scene":id]=$(id).value;
+  renderPhrases();
+ });
+}
+
+$("captionInput").addEventListener("input",()=>{
+ const e=edit();
+ if(!e)return;
+ e.caption=$("captionInput").value;
+ renderPreview();
+});
+
+$("fontSelect").addEventListener("change",()=>{
+ const e=edit();
+ if(!e)return;
+ e.font=$("fontSelect").value;
+ renderPreview();
+});
+
+$("fontSize").addEventListener("input",()=>{
+ const e=edit();
+ if(!e)return;
+ e.fontSize=Number($("fontSize").value);
+ updateRangeNumbers();
+ renderPreview();
+});
+
+document.querySelectorAll(".color-dot").forEach(btn=>{
+ btn.onclick=()=>{
+  const e=edit();
+  if(!e)return;
+  e.color=btn.dataset.color;
+  updateColorButtons();
+  renderPreview();
+ };
+});
+
+function renderDecors(){
+ const e=edit();
+ const layer=$("overlayLayer");
+ layer.innerHTML="";
+ if(!e)return;
+
+ e.decors.forEach((decor,index)=>{
+  const el=document.createElement("div");
+  el.className="decor"+
+   (state.activeDecor===index?" selected":"");
+  el.textContent=decor.symbol;
+  el.style.left=decor.x+"%";
+  el.style.top=decor.y+"%";
+  el.style.fontSize=decor.size+"px";
+  el.dataset.index=index;
+  el.style.pointerEvents="auto";
+
+  el.addEventListener("pointerdown",event=>{
+   state.activeDecor=index;
+   startDrag(event,"decor",index);
+   $("decorSize").value=decor.size;
+   $("decorSizeNum").textContent=decor.size;
+   renderDecorSelection();
+  });
+
+  layer.appendChild(el);
+ });
+}
+
+function renderDecorSelection(){
+ document.querySelectorAll(".decor").forEach(el=>{
+  el.classList.toggle(
+   "selected",
+   Number(el.dataset.index)===state.activeDecor
+  );
+ });
+}
+
+document.querySelectorAll("[data-decor]").forEach(btn=>{
+ btn.onclick=()=>{
+  const e=edit();
+  if(!e)return;
+  e.decors.push({
+   symbol:btn.dataset.decor,
+   x:50,y:45,size:40
+  });
+  state.activeDecor=e.decors.length-1;
+  $("decorSize").value=40;
+  $("decorSizeNum").textContent=40;
+  renderDecors();
+ };
+});
+
+$("decorSize").addEventListener("input",()=>{
+ const e=edit();
+ if(!e)return;
+ const decor=e.decors[state.activeDecor];
+ if(!decor)return;
+ decor.size=Number($("decorSize").value);
+ $("decorSizeNum").textContent=decor.size;
+ renderDecors();
+});
+
+$("deleteDecor").onclick=()=>{
+ const e=edit();
+ if(!e)return;
+ if(state.activeDecor<0)return;
+ e.decors.splice(state.activeDecor,1);
+ state.activeDecor=-1;
+ renderDecors();
+};
+
+$("clearDecor").onclick=()=>{
+ const e=edit();
+ if(!e)return;
+ e.decors=[];
+ state.activeDecor=-1;
+ renderDecors();
+};
+
+function startDrag(event,type,index=-1){
+ const stage=$("stage");
+ const element=event.currentTarget;
+
+ state.dragging={type,index,pointerId:event.pointerId};
+
+ element.setPointerCapture(event.pointerId);
+ event.preventDefault();
+}
+
+function moveDrag(event){
+ const drag=state.dragging;
+ if(!drag||drag.pointerId!==event.pointerId)return;
+
+ const e=edit();
+ if(!e)return;
+
+ const rect=$("stage").getBoundingClientRect();
+ const x=Math.max(5,Math.min(
+  95,(event.clientX-rect.left)/rect.width*100
+ ));
+ const y=Math.max(5,Math.min(
+  95,(event.clientY-rect.top)/rect.height*100
+ ));
+
+ if(drag.type==="caption"){
+  e.x=x;
+  e.y=y;
+  $("caption").style.left=x+"%";
+  $("caption").style.top=y+"%";
+ }else{
+  const decor=e.decors[drag.index];
+  if(!decor)return;
+  decor.x=x;
+  decor.y=y;
+  const element=document.querySelector(
+   `.decor[data-index="${drag.index}"]`
+  );
+  if(element){
+   element.style.left=x+"%";
+   element.style.top=y+"%";
+  }
+ }
+}
+
+$("caption").addEventListener("pointerdown",event=>{
+ if(!edit())return;
+ startDrag(event,"caption");
+});
+
+$("caption").addEventListener("pointermove",moveDrag);
+$("caption").addEventListener("pointerup",()=>{
+ state.dragging=null;
+});
+$("caption").addEventListener("pointercancel",()=>{
+ state.dragging=null;
+});
+
+$("overlayLayer").addEventListener(
+ "pointermove",moveDrag
+);
+$("overlayLayer").addEventListener(
+ "pointerup",()=>{state.dragging=null}
+);
+$("overlayLayer").addEventListener(
+ "pointercancel",()=>{state.dragging=null}
+);
+
+function renderGenreChoices(){
+ const area=$("genreChoices");
+ area.innerHTML="";
+
+ genres.forEach(genre=>{
+  const btn=document.createElement("button");
+  btn.className="chip"+
+   (selectedGenres.has(genre)?" selected":"");
+  btn.textContent=genre;
+  btn.onclick=()=>{
+   if(selectedGenres.has(genre)){
+    selectedGenres.delete(genre);
+   }else{
+    selectedGenres.add(genre);
+   }
+   renderGenreChoices();
+  };
+  area.appendChild(btn);
+ });
+}
+
+function musicKeywords(genre,scene,mood,era){
+ const scenes={
+  food:"cafe chill",
+  friends:"friends fun",
+  date:"romantic",
+  travel:"travel vibes",
+  birthday:"birthday party",
+  night:"night city",
+  fashion:"fashion aesthetic",
+  daily:"daily vibes"
+ };
+ const moods={
+  auto:scenes[scene],
+  cool:"cool",
+  cute:"cute",
+  chill:"chill",
+  emo:"emotional"
+ };
+ const eras={
+  trend:"2026 trending",
+  recent:"2023 2024 2025",
+  nostalgic:"nostalgic hits",
+  any:"popular songs"
+ };
+ return `${genre} ${moods[mood]} ${eras[era]}`;
+}
+
+$("musicSearch").onclick=()=>{
+ const area=$("musicResults");
+ area.innerHTML="";
+
+ if(selectedGenres.size===0){
+  area.textContent="ジャンルを1つ以上選んでね ♡";
+  return;
+ }
+
+ const scene=$("scene").value;
+ const mood=$("musicMood").value;
+ const era=$("musicEra").value;
+
+ const intro=document.createElement("div");
+ intro.className="music-result";
+
+ const title=document.createElement("strong");
+ title.textContent="おすすめの探し方 ♫";
+
+ const description=document.createElement("p");
+ description.className="small";
+ description.textContent=
+  "選んだジャンルと写真のシーンに合う曲を"+
+  "検索できるようにしました。"+
+  "実際の曲は検索結果から選んでください。";
+
+ intro.append(title,description);
+ area.appendChild(intro);
+
+ Array.from(selectedGenres).forEach(genre=>{
+  const keywords=musicKeywords(
+   genre,scene,mood,era
+  );
+
+  const box=document.createElement("div");
+  box.className="music-result";
+
+  const name=document.createElement("strong");
+  name.textContent=genre;
+
+  const text=document.createElement("p");
+  text.className="small";
+  text.textContent="検索キーワード："+keywords;
+
+  const youtube=document.createElement("a");
+  youtube.href=
+   "https://www.youtube.com/results?search_query="+
+   encodeURIComponent(keywords);
+  youtube.target="_blank";
+  youtube.rel="noopener noreferrer";
+  youtube.textContent="YouTubeで探す";
+
+  const spotify=document.createElement("a");
+  spotify.href=
+   "https://open.spotify.com/search/"+
+   encodeURIComponent(keywords);
+  spotify.target="_blank";
+  spotify.rel="noopener noreferrer";
+  spotify.textContent="Spotifyで探す";
+
+  box.append(name,text,youtube,spotify);
+  area.appendChild(box);
+ });
+};
+
+document.querySelectorAll(".tab").forEach(btn=>{
+ btn.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(b=>{
+   b.classList.toggle(
+    "active",b===btn
+   );
+  });
+  document.querySelectorAll(".tab-panel").forEach(p=>{
+   p.classList.toggle(
+    "active",p.id===btn.dataset.tab
+   );
+  });
+ };
+});
+
+function wrapText(ctx,text,maxWidth){
+ const lines=[];
+ let line="";
+
+ for(const char of Array.from(text)){
+  if(char==="\n"){
+   lines.push(line);
+   line="";
+   continue;
+  }
+  if(ctx.measureText(line+char).width>maxWidth&&line){
+   lines.push(line);
+   line=char;
+  }else{
+   line+=char;
+  }
+ }
+ lines.push(line);
+ return lines;
+}
+
+function drawWarmth(ctx,w,h,warmth){
+ if(!warmth)return;
+ ctx.save();
+ ctx.globalAlpha=
+  Math.min(Math.abs(warmth)/200,.25);
+ ctx.fillStyle=
+  warmth>0?"#ffad60":"#7ba9ff";
+ ctx.fillRect(0,0,w,h);
+ ctx.restore();
+}
+
+function drawCaption(ctx,e,w,h,scale){
+ if(!e.caption)return;
+
+ let fontStyle="";
+ let weight="normal";
+
+ if(e.font==="romantic")fontStyle="italic ";
+ if(e.font==="bold")weight="bold";
+ if(e.font==="soft")weight="300";
+
+ const size=e.fontSize*scale;
+ ctx.save();
+ ctx.font=
+  `${fontStyle}${weight} ${size}px ${fontCSS(e.font)}`;
+ ctx.fillStyle=e.color;
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+ ctx.shadowColor="rgba(0,0,0,.5)";
+ ctx.shadowBlur=5*scale;
+ ctx.shadowOffsetY=scale;
+
+ const lines=wrapText(
+  ctx,e.caption,w*.85
+ );
+ const lineHeight=size*1.35;
+ const centerX=w*e.x/100;
+ const centerY=h*e.y/100;
+ const startY=
+  centerY-(lines.length-1)*lineHeight/2;
+
+ lines.forEach((line,index)=>{
+  ctx.fillText(
+   line,centerX,startY+index*lineHeight
+  );
+ });
+ ctx.restore();
+}
+
+function drawDecors(ctx,e,w,h,scale){
+ ctx.save();
+ ctx.textAlign="center";
+ ctx.textBaseline="middle";
+
+ e.decors.forEach(decor=>{
+  ctx.font=`${decor.size*scale}px `+
+   '"Apple Color Emoji","Segoe UI Emoji",sans-serif';
+  ctx.fillText(
+   decor.symbol,
+   w*decor.x/100,
+   h*decor.y/100
+  );
+ });
+ ctx.restore();
+}
+
+$("saveImage").onclick=async()=>{
+ const photo=current();
+ const e=edit();
+ if(!photo||!e)return;
+
+ $("saveStatus").textContent="画像を保存中...";
+
+ try{
+  const img=await loadImage(photo.src);
+  const canvas=document.createElement("canvas");
+  canvas.width=photo.width;
+  canvas.height=photo.height;
+
+  const ctx=canvas.getContext("2d");
+  if(!ctx)throw new Error("Canvas unavailable");
+
+  ctx.filter=getFilter(e);
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  ctx.filter="none";
+
+  drawWarmth(
+   ctx,canvas.width,canvas.height,e.warmth
+  );
+
+  const stageWidth=$("stage").clientWidth;
+  const scale=canvas.width/stageWidth;
+
+  drawDecors(
+   ctx,e,canvas.width,canvas.height,scale
+  );
+  drawCaption(
+   ctx,e,canvas.width,canvas.height,scale
+  );
+
+  const blob=await new Promise(resolve=>{
+   canvas.toBlob(resolve,"image/png");
+  });
+  if(!blob)throw new Error("PNG export failed");
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`VOQ-CREATOR-${state.selected+1}.png`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+
+  $("saveStatus").textContent=
+   "保存を開始しました ♡ ダウンロードを確認してね。";
+
+ }catch(error){
+  console.error(error);
+  $("saveStatus").textContent=
+   "保存できませんでした。別の写真で試してね。";
+ }
+};
+
+renderGenreChoices();
+renderPhrases();
+
+/* VØQ MUSIC MATCH v0.9
+   実在曲検索・Instagram用コピー機能
+*/
+
+const musicMatch = {
+  genres: {
+    "日本語ラップ": ["Japanese hip hop", "日本語ラップ"],
+    "日本のHIP-HOP": ["Japanese hip hop"],
+    "海外HIP-HOP": ["hip hop rap"],
+    "R&B": ["R&B soul"],
+    "J-POP": ["J-pop"],
+    "K-POP": ["K-pop"],
+    "洋楽ポップ": ["pop"],
+    "邦ロック": ["Japanese rock"],
+    "バラード": ["ballad"],
+    "インディーズ": ["indie pop"]
+  },
+
+  sceneMood: {
+    food: "chill",
+    friends: "upbeat",
+    date: "love",
+    travel: "summer",
+    birthday: "party",
+    night: "night",
+    fashion: "cool",
+    daily: "relax"
+  }
+};
+
+async function searchRealSongs() {
+  const area = document.getElementById("musicResults");
+  const button = document.getElementById("musicSearch");
+
+  if (!area || !button) return;
+
+  if (selectedGenres.size === 0) {
+    area.textContent = "好きなジャンルを選んでね ♡";
+    return;
+  }
+
+  area.innerHTML = "";
+  button.disabled = true;
+  button.textContent = "実在する曲を検索中... ♫";
+
+  const scene = document.getElementById("scene").value;
+  const era = document.getElementById("musicEra").value;
+  const mood = document.getElementById("musicMood").value;
+
+  const allSongs = [];
+  const seen = new Set();
+
+  const genreList = Array.from(selectedGenres).slice(0, 5);
+
+  try {
+    for (const genre of genreList) {
+      const terms = musicMatch.genres[genre] || [genre];
+      const term = terms[0];
+
+      const params = new URLSearchParams({
+        term: term,
+        entity: "song",
+        media: "music",
+        limit: "40",
+        country: "JP"
+      });
+
+      const response = await fetch(
+        "https://itunes.apple.com/search?" + params.toString()
+      );
+
+      if (!response.ok) {
+        throw new Error("Music API error");
+      }
+
+      const data = await response.json();
+
+      for (const song of data.results || []) {
+        if (!song.trackName || !song.artistName) continue;
+
+        const key =
+          song.trackName.toLowerCase() + "|" +
+          song.artistName.toLowerCase();
+
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const releaseYear = song.releaseDate
+          ? new Date(song.releaseDate).getFullYear()
+          : null;
+
+        if (era === "recent" &&
+            (!releaseYear || releaseYear < 2023)) {
+          continue;
+        }
+
+        if (era === "nostalgic" &&
+            (!releaseYear || releaseYear > 2022)) {
+          continue;
+        }
+
+        allSongs.push({
+          title: song.trackName,
+          artist: song.artistName,
+          genre: genre,
+          year: releaseYear,
+          url: song.trackViewUrl || "",
+          id: song.trackId || key
+        });
+      }
+    }
+
+    // 「今流行っている曲」は、ここでは新しいリリースを優先。
+    // 実際の流行ランキングではありません。
+    if (era === "trend") {
+      allSongs.sort((a, b) => (b.year || 0) - (a.year || 0));
+    } else {
+      allSongs.sort((a, b) => {
+        const aa = String(a.title + a.artist);
+        const bb = String(b.title + b.artist);
+        return aa.localeCompare(bb);
+      });
+    }
+
+    const songs = allSongs.slice(0, 5);
+
+    if (!songs.length) {
+      area.textContent =
+        "条件に合う曲が見つかりませんでした。" +
+        "ジャンルや年代を変更してみてね。";
+      return;
+    }
+
+    const heading = document.createElement("div");
+    heading.className = "music-result";
+
+    const headingTitle = document.createElement("strong");
+    headingTitle.textContent = "おすすめの実在曲 ♫";
+
+    const note = document.createElement("p");
+    note.className = "small";
+    note.textContent =
+      "Appleの楽曲データから検索した候補です。" +
+      "写真の自動AI分析やInstagramの流行順位を" +
+      "反映した結果ではありません。";
+
+    heading.append(headingTitle, note);
+    area.appendChild(heading);
+
+    for (const song of songs) {
+      const card = document.createElement("div");
+      card.className = "music-result";
+
+      const title = document.createElement("strong");
+      title.textContent = song.title;
+
+      const artist = document.createElement("p");
+      artist.className = "small";
+      artist.textContent =
+        song.artist +
+        " · " + song.genre +
+        (song.year ? " · " + song.year : "");
+
+      const copy = document.createElement("button");
+      copy.className = "pink";
+      copy.textContent = "曲名をコピー ♡";
+
+      copy.addEventListener("click", async () => {
+        const value = song.title + " " + song.artist;
+
+        try {
+          await navigator.clipboard.writeText(value);
+          copy.textContent = "コピーできた ✓";
+        } catch (error) {
+          const input = document.createElement("textarea");
+          input.value = value;
+          input.style.position = "fixed";
+          input.style.opacity = "0";
+          document.body.appendChild(input);
+          input.select();
+
+          const success = document.execCommand("copy");
+          input.remove();
+
+          copy.textContent = success
+            ? "コピーできた ✓"
+            : "コピーできませんでした";
+        }
+
+        setTimeout(() => {
+          copy.textContent = "曲名をコピー ♡";
+        }, 2000);
+      });
+
+      card.append(title, artist, copy);
+
+      if (song.url) {
+        const link = document.createElement("a");
+        link.href = song.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "曲を確認する";
+        card.appendChild(link);
+      }
+
+      area.appendChild(card);
+    }
+
+  } catch (error) {
+    console.error("Music Match:", error);
+    area.textContent =
+      "曲を取得できませんでした。" +
+      "インターネット接続を確認して、もう一度試してね。";
+  } finally {
+    button.disabled = false;
+    button.textContent = "実在するおすすめ曲を探す ♫";
+  }
+}
+
+// 既存の検索ボタンを新しい楽曲検索に切り替える
+document.getElementById("musicSearch").onclick = searchRealSongs;
+
+</script>
+</body>
+</html>
