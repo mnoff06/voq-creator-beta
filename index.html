@@ -71,7 +71,7 @@ small,.hint{font-size:11px;color:#8c818a;line-height:1.7}
 </header>
 <main>
 <h1>Create your vibe.</h1>
-<p class="subtitle">AIが写真の世界観を読み取り、言葉・フォント・音楽を提案。</p>
+<p class="subtitle">写真編集と音楽セレクト。AIで言葉・フォントも提案。</p>
 <div class="layout">
 <div>
 <section class="panel">
@@ -94,15 +94,29 @@ small,.hint{font-size:11px;color:#8c818a;line-height:1.7}
 <section class="panel">
 <h2>AI PHOTO ANALYSIS</h2>
 <div class="pad">
-<p class="hint">写真を選び、好きな音楽ジャンルを指定してAIに分析してもらいます。</p>
-<label>音楽ジャンル（複数選択可能）</label>
-<div class="chips" id="genres"></div>
+<p class="hint">写真をAIで分析し、文章・フォントを提案します。音楽は下のMUSIC MATCHで、AI接続なしで選べます。</p>
 <label>追加の希望（任意）</label>
-<input type="text" id="instruction" maxlength="180" placeholder="例：大人っぽい、韓国風、切ない曲">
+<input type="text" id="instruction" maxlength="180" placeholder="例：大人っぽい、韓国風、切ない雰囲気">
 <button class="primary" id="analyze" style="width:100%;margin-top:13px">AIに写真を分析してもらう</button>
 <p id="status" aria-live="polite"></p>
 <div id="analysis" hidden></div>
 <div id="suggestions"></div>
+</div>
+</section>
+<section class="panel" id="musicMatch">
+<h2>VØQ MUSIC MATCH / 曲を選ぶ</h2>
+<div class="pad">
+<p class="hint">外部API・写真分析なし。ジャンルと雰囲気を選ぶだけで、登録済みの曲をおすすめします。</p>
+<label for="musicGenre">音楽ジャンル</label>
+<select id="musicGenre"></select>
+<label for="musicMood">写真・投稿の雰囲気</label>
+<select id="musicMood"></select>
+<div class="buttons" style="margin-top:12px">
+<button class="primary" id="recommendMusic">おすすめ曲を表示</button>
+<button id="moreMusic">別の候補を見る</button>
+</div>
+<p class="hint" id="musicStatus" aria-live="polite"></p>
+<div id="musicResults"></div>
 </div>
 </section>
 </div>
@@ -562,16 +576,81 @@ $("reset").addEventListener("click",()=>{
  render();
 });
 
-/* GENRES */
-
-for(const name of genreNames){
- const b=button(name,()=>{
-  if(state.genres.has(name))state.genres.delete(name);
-  else state.genres.add(name);
-  b.classList.toggle("active",state.genres.has(name));
- },state.genres.has(name)?"active":"");
- $("genres").append(b);
+/* OFFLINE MUSIC MATCH — no API requests, no audio playback */
+const musicLibrary = [
+ {g:"R&B",t:"Snooze",a:"SZA",m:["エモい","夜っぽい","切ない"]},
+ {g:"R&B",t:"Best Part",a:"Daniel Caesar feat. H.E.R.",m:["エモい","恋愛","落ち着く"]},
+ {g:"R&B",t:"Pink + White",a:"Frank Ocean",m:["エモい","おしゃれ","明るい"]},
+ {g:"R&B",t:"Get You",a:"Daniel Caesar feat. Kali Uchis",m:["エモい","恋愛","夜っぽい"]},
+ {g:"R&B",t:"Focus",a:"H.E.R.",m:["エモい","切ない","夜っぽい"]},
+ {g:"R&B",t:"Good Days",a:"SZA",m:["エモい","落ち着く","明るい"]},
+ {g:"R&B",t:"Japanese Denim",a:"Daniel Caesar",m:["エモい","落ち着く","恋愛"]},
+ {g:"R&B",t:"Come Through",a:"H.E.R. feat. Chris Brown",m:["エモい","夜っぽい","恋愛"]},
+ {g:"K-POP",t:"Ditto",a:"NewJeans",m:["エモい","切ない","かわいい"]},
+ {g:"K-POP",t:"Love Lee",a:"AKMU",m:["かわいい","明るい","恋愛"]},
+ {g:"K-POP",t:"Hype Boy",a:"NewJeans",m:["明るい","かわいい","おしゃれ"]},
+ {g:"K-POP",t:"ONLY",a:"LeeHi",m:["エモい","恋愛","落ち着く"]},
+ {g:"K-POP",t:"Instagram",a:"DEAN",m:["夜っぽい","エモい","おしゃれ"]},
+ {g:"J-POP",t:"花束",a:"back number",m:["恋愛","エモい","切ない"]},
+ {g:"J-POP",t:"ドライフラワー",a:"優里",m:["切ない","エモい","恋愛"]},
+ {g:"J-POP",t:"怪獣の花唄",a:"Vaundy",m:["明るい","エモい","おしゃれ"]},
+ {g:"J-POP",t:"なんでもないよ、",a:"マカロニえんぴつ",m:["恋愛","エモい","落ち着く"]},
+ {g:"日本語ラップ",t:"のびしろ",a:"Creepy Nuts",m:["明るい","おしゃれ","エモい"]},
+ {g:"日本語ラップ",t:"Bling-Bang-Bang-Born",a:"Creepy Nuts",m:["明るい","おしゃれ"]},
+ {g:"日本語ラップ",t:"My Resort",a:"¥ellow Bucks",m:["おしゃれ","夜っぽい"]},
+ {g:"HIP-HOP",t:"LOVE.",a:"Kendrick Lamar feat. Zacari",m:["恋愛","エモい","夜っぽい"]},
+ {g:"HIP-HOP",t:"SICKO MODE",a:"Travis Scott",m:["夜っぽい","おしゃれ"]},
+ {g:"HIP-HOP",t:"Sunflower",a:"Post Malone & Swae Lee",m:["明るい","エモい","おしゃれ"]},
+ {g:"洋楽 POP",t:"golden hour",a:"JVKE",m:["エモい","恋愛","明るい"]},
+ {g:"洋楽 POP",t:"Until I Found You",a:"Stephen Sanchez",m:["恋愛","エモい","切ない"]},
+ {g:"洋楽 POP",t:"Cruel Summer",a:"Taylor Swift",m:["明るい","恋愛","おしゃれ"]},
+ {g:"洋楽 POP",t:"Ocean Eyes",a:"Billie Eilish",m:["エモい","切ない","落ち着く"]},
+ {g:"CHILL",t:"Sunset Lover",a:"Petit Biscuit",m:["エモい","落ち着く","おしゃれ"]},
+ {g:"CHILL",t:"Show Me How",a:"Men I Trust",m:["落ち着く","エモい","夜っぽい"]},
+ {g:"CHILL",t:"Space Song",a:"Beach House",m:["エモい","夜っぽい","切ない"]},
+ {g:"インディー",t:"Nothing's Gonna Hurt You Baby",a:"Cigarettes After Sex",m:["エモい","恋愛","夜っぽい"]},
+ {g:"インディー",t:"Apocalypse",a:"Cigarettes After Sex",m:["エモい","切ない","夜っぽい"]},
+ {g:"インディー",t:"Glue Song",a:"beabadoobee",m:["かわいい","恋愛","落ち着く"]},
+ {g:"シティポップ",t:"プラスティック・ラブ",a:"竹内まりや",m:["夜っぽい","エモい","おしゃれ"]},
+ {g:"シティポップ",t:"真夜中のドア〜stay with me",a:"松原みき",m:["夜っぽい","エモい","切ない"]},
+ {g:"シティポップ",t:"4:00 A.M.",a:"大貫妙子",m:["夜っぽい","落ち着く","おしゃれ"]}
+];
+const musicMoods=["エモい","おしゃれ","かわいい","夜っぽい","明るい","切ない","恋愛","落ち着く"];
+for(const genre of genreNames){
+ const option=document.createElement("option");
+ option.value=genre;option.textContent=genre;
+ $("musicGenre").append(option);
 }
+for(const mood of musicMoods){
+ const option=document.createElement("option");
+ option.value=mood;option.textContent=mood;
+ $("musicMood").append(option);
+}
+let musicOffset=0;
+function recommendMusic(){
+ const genre=$("musicGenre").value;
+ const mood=$("musicMood").value;
+ const tracks=musicLibrary.filter(x=>x.g===genre);
+ const ordered=[...tracks].sort((a,b)=>Number(b.m.includes(mood))-Number(a.m.includes(mood)));
+ const results=$("musicResults");
+ results.replaceChildren();
+ const count=Math.min(5,ordered.length);
+ if(!count){$("musicStatus").textContent="このジャンルにはまだ登録曲がありません";return;}
+ for(let i=0;i<count;i++){
+  const song=ordered[(i+musicOffset)%ordered.length];
+  const search=`${song.t} ${song.a}`;
+  const reason=song.m.includes(mood)?`「${mood}」の雰囲気におすすめ`:`${genre}からの追加候補`;
+  results.append(suggestionCard(song.t,song.a,reason,[
+   ["Instagram検索用にコピー",()=>copyText(search)]
+  ]));
+ }
+ $("musicStatus").textContent=`${genre} × ${mood}｜${count}曲を表示。Instagramの音源ライブラリで利用可能かは検索して確認してください。`;
+}
+$("recommendMusic").addEventListener("click",()=>{musicOffset=0;recommendMusic();});
+$("moreMusic").addEventListener("click",()=>{musicOffset++;recommendMusic();});
+$("musicGenre").addEventListener("change",()=>{musicOffset=0;recommendMusic();});
+$("musicMood").addEventListener("change",()=>{musicOffset=0;recommendMusic();});
+recommendMusic();
 
 /* AI ANALYSIS */
 
@@ -670,18 +749,7 @@ function showAIResult(data){
   ));
  }
 
- box.append(sectionTitle("AIおすすめ音楽"));
- for(const item of data.songs||[]){
-  const searchText=
-   String(item.title||"")+" "+String(item.artist||"");
-  box.append(suggestionCard(
-   item.genre||"MUSIC",
-   searchText.trim(),
-   item.reason,[
-    ["Instagram検索用にコピー",()=>copyText(searchText.trim())]
-   ]
-  ));
- }
+
 }
 
 $("analyze").addEventListener("click",async()=>{
@@ -696,7 +764,7 @@ $("analyze").addEventListener("click",async()=>{
  const b=$("analyze");
  b.disabled=true;
  b.textContent="AIが写真を考察中...";
- notify("情景・感情・フォント・音楽を分析しています");
+ notify("情景・感情・フォントを分析しています");
 
  try{
   const image=await preparePhoto();
@@ -705,7 +773,7 @@ $("analyze").addEventListener("click",async()=>{
    headers:{"Content-Type":"application/json"},
    body:JSON.stringify({
     image,
-    genres:Array.from(state.genres),
+    genres:[],
     instruction:$("instruction").value.trim()
    })
   });
